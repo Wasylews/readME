@@ -9,4 +9,5 @@
     <!--toolbar navigation-->
     <string name="day">Day</string>
     <string name="night">Night</string>
+    <string name="search">Search</string>
 </resources>

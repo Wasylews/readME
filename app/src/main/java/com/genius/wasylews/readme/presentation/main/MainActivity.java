@@ -7,6 +7,11 @@ import android.view.MenuItem;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.genius.wasylews.readme.R;
 import com.genius.wasylews.readme.presentation.base.BaseActivity;
+import com.jakewharton.rxbinding3.view.MenuItemActionViewCollapseEvent;
+import com.jakewharton.rxbinding3.view.MenuItemActionViewExpandEvent;
+import com.jakewharton.rxbinding3.view.RxMenuItem;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import javax.inject.Inject;
 
@@ -14,6 +19,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Lifecycle;
 import butterknife.BindView;
 
 public class MainActivity extends BaseActivity implements MainView {
@@ -22,10 +28,8 @@ public class MainActivity extends BaseActivity implements MainView {
     @Inject
     MainPresenter presenter;
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
 
     @Override
     protected void onSetupView(Bundle savedInstanceState) {
@@ -61,8 +65,8 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem dayNightModeItem = menu.findItem(R.id.item_daynight);
-        updateDayNightModeItem(dayNightModeItem);
+        updateDayNightModeItem(menu.findItem(R.id.item_daynight));
+        handleSearchItemActionViewEvents(menu);
         return true;
     }
 
@@ -74,6 +78,19 @@ public class MainActivity extends BaseActivity implements MainView {
             menuItem.setIcon(R.drawable.ic_night);
             menuItem.setTitle(R.string.night);
         }
+    }
+
+    private void handleSearchItemActionViewEvents(Menu menu) {
+        RxMenuItem.actionViewEvents(menu.findItem(R.id.item_search))
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+                .subscribe(menuItemActionViewEvent -> {
+                    if (menuItemActionViewEvent instanceof MenuItemActionViewExpandEvent) {
+                        menu.findItem(R.id.item_daynight).setVisible(false);
+                    } else if (menuItemActionViewEvent instanceof MenuItemActionViewCollapseEvent) {
+                        menu.findItem(R.id.item_daynight).setVisible(true);
+                        invalidateOptionsMenu();
+                    }
+                });
     }
 
     @Override
