@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">readME</string>
+
+    <!--side navigation-->
+    <string name="bookmarks">Bookmarks</string>
+    <string name="goto_page">Go to page…</string>
+    <string name="library">Library</string>
+
+    <!--toolbar navigation-->
+    <string name="day">Day</string>
+    <string name="night">Night</string>
 </resources>

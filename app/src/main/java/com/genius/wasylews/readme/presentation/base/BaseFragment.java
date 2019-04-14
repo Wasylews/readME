@@ -25,20 +25,11 @@ import dagger.android.support.DaggerFragment;
 /**
  * Base fragment with AndroidX support
  */
-public abstract class BaseFragment<P extends MvpPresenter> extends DaggerFragment {
+public abstract class BaseFragment extends DaggerFragment {
 
     private boolean mIsStateSaved;
     private MvpDelegate<? extends BaseFragment> mMvpDelegate;
     protected Unbinder unbinder;
-
-    @Inject
-    @InjectPresenter
-    protected P presenter;
-
-    @ProvidePresenter
-    P providePresenter() {
-        return presenter;
-    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -3,13 +3,8 @@ package com.genius.wasylews.readme.presentation.base;
 import android.os.Bundle;
 
 import com.arellomobile.mvp.MvpDelegate;
-import com.arellomobile.mvp.MvpPresenter;
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import org.jetbrains.annotations.NotNull;
-
-import javax.inject.Inject;
 
 import androidx.annotation.LayoutRes;
 import butterknife.ButterKnife;
@@ -18,17 +13,8 @@ import dagger.android.support.DaggerAppCompatActivity;
 /**
  * Base activity with AndroidX support
  */
-public abstract class BaseActivity<P extends MvpPresenter> extends DaggerAppCompatActivity {
+public abstract class BaseActivity extends DaggerAppCompatActivity {
     private MvpDelegate<? extends BaseActivity> mMvpDelegate;
-
-    @Inject
-    @InjectPresenter
-    protected P presenter;
-
-    @ProvidePresenter
-    P providePresenter() {
-        return presenter;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +22,11 @@ public abstract class BaseActivity<P extends MvpPresenter> extends DaggerAppComp
 
         setContentView(getLayoutResourceId());
         ButterKnife.bind(this);
+        onSetupView(savedInstanceState);
         getMvpDelegate().onCreate(savedInstanceState);
     }
+
+    protected abstract void onSetupView(Bundle savedInstanceState);
 
     protected abstract @LayoutRes int getLayoutResourceId();
 
