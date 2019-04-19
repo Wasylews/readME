@@ -8,4 +8,8 @@ interface MainView extends MvpView {
 
     @StateStrategyType(SkipStrategy.class)
     void setNightMode(boolean isNight);
+
+    void showSystemUi();
+
+    void hideSystemUi();
 }

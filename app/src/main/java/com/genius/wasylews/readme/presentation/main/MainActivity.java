@@ -3,24 +3,29 @@ package com.genius.wasylews.readme.presentation.main;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.genius.wasylews.readme.R;
-import com.genius.wasylews.readme.presentation.base.BaseActivity;
-import com.jakewharton.rxbinding3.view.MenuItemActionViewCollapseEvent;
-import com.jakewharton.rxbinding3.view.MenuItemActionViewExpandEvent;
-import com.jakewharton.rxbinding3.view.RxMenuItem;
-import com.uber.autodispose.AutoDispose;
-import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
-
-import javax.inject.Inject;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Lifecycle;
+
+import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.genius.wasylews.readme.R;
+import com.genius.wasylews.readme.presentation.base.BaseActivity;
+import com.genius.wasylews.readme.presentation.main.custom.RenderView;
+import com.jakewharton.rxbinding3.view.MenuItemActionViewCollapseEvent;
+import com.jakewharton.rxbinding3.view.MenuItemActionViewExpandEvent;
+import com.jakewharton.rxbinding3.view.RxMenuItem;
+import com.jakewharton.rxbinding3.view.RxView;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
+
+import static com.uber.autodispose.AutoDispose.autoDisposable;
 
 public class MainActivity extends BaseActivity implements MainView {
 
@@ -30,12 +35,17 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.book_render) RenderView bookRender;
 
     @Override
     protected void onSetupView(Bundle savedInstanceState) {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        RxView.clicks(bookRender)
+                .as(autoDisposable(AndroidLifecycleScopeProvider.from(this)))
+                .subscribe(view -> presenter.bookRenderClicked());
     }
 
     @Override
@@ -82,7 +92,7 @@ public class MainActivity extends BaseActivity implements MainView {
 
     private void handleSearchItemActionViewEvents(Menu menu) {
         RxMenuItem.actionViewEvents(menu.findItem(R.id.item_search))
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+                .as(autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
                 .subscribe(menuItemActionViewEvent -> {
                     if (menuItemActionViewEvent instanceof MenuItemActionViewExpandEvent) {
                         menu.findItem(R.id.item_daynight).setVisible(false);
@@ -101,5 +111,28 @@ public class MainActivity extends BaseActivity implements MainView {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void hideSystemUi() {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        getSupportActionBar().hide();
+    }
+
+    @Override
+    public void showSystemUi() {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        getSupportActionBar().show();
     }
 }

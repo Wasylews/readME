@@ -8,7 +8,8 @@ import javax.inject.Inject;
 @InjectViewState
 public class MainPresenter extends MvpPresenter<MainView> {
 
-    private boolean isNightMode = false;
+    private boolean isNightMode;
+    private boolean isFullScreen;
 
     @Inject
     public MainPresenter() {
@@ -22,5 +23,14 @@ public class MainPresenter extends MvpPresenter<MainView> {
 
     boolean isNightMode() {
         return isNightMode;
+    }
+
+    void bookRenderClicked() {
+        if (isFullScreen) {
+            getViewState().showSystemUi();
+        } else {
+            getViewState().hideSystemUi();
+        }
+        isFullScreen = !isFullScreen;
     }
 }
