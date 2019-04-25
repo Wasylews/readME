@@ -22,11 +22,11 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
 
         setContentView(getLayoutResourceId());
         ButterKnife.bind(this);
-        onSetupView(savedInstanceState);
+        onViewReady(savedInstanceState);
         getMvpDelegate().onCreate(savedInstanceState);
     }
 
-    protected abstract void onSetupView(Bundle savedInstanceState);
+    protected abstract void onViewReady(Bundle savedInstanceState);
 
     protected abstract @LayoutRes int getLayoutResourceId();
 

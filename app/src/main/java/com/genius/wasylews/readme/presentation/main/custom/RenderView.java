@@ -15,8 +15,4 @@ public class RenderView extends View {
     public RenderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
-
-    public RenderView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
 }

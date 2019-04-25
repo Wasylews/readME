@@ -12,13 +12,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Lifecycle;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.genius.wasylews.readme.R;
 import com.genius.wasylews.readme.presentation.base.BaseActivity;
-import com.genius.wasylews.readme.presentation.main.custom.RenderView;
+import com.genius.wasylews.readme.presentation.main.adapter.BookAdapter;
+import com.genius.wasylews.readme.presentation.main.custom.ClickableViewPager;
 import com.jakewharton.rxbinding3.view.MenuItemActionViewCollapseEvent;
 import com.jakewharton.rxbinding3.view.MenuItemActionViewExpandEvent;
 import com.jakewharton.rxbinding3.view.RxMenuItem;
-import com.jakewharton.rxbinding3.view.RxView;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 
 import javax.inject.Inject;
@@ -35,17 +36,24 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
-    @BindView(R.id.book_render) RenderView bookRender;
+    @BindView(R.id.book_pager) ClickableViewPager bookPager;
+    private BookAdapter bookAdapter;
+
+    @ProvidePresenter
+    MainPresenter providePresenter() {
+        return presenter;
+    }
 
     @Override
-    protected void onSetupView(Bundle savedInstanceState) {
+    protected void onViewReady(Bundle savedInstanceState) {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu);
 
-        RxView.clicks(bookRender)
-                .as(autoDisposable(AndroidLifecycleScopeProvider.from(this)))
-                .subscribe(view -> presenter.bookRenderClicked());
+        bookPager.setOnItemClickListener(position -> presenter.bookRenderClicked());
+
+        bookAdapter = new BookAdapter(getSupportFragmentManager(), 3);
+        bookPager.setAdapter(bookAdapter);
     }
 
     @Override
