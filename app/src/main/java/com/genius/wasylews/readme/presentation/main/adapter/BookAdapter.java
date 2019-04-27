@@ -5,15 +5,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import com.genius.wasylews.readme.domain.model.Book;
 import com.genius.wasylews.readme.presentation.main.fragment.BookPageFragment;
 
 public class BookAdapter extends FragmentStatePagerAdapter {
 
-    private final int pageCount;
+    private final Book book;
 
-    public BookAdapter(@NonNull FragmentManager fm, int pageCount) {
+    public BookAdapter(@NonNull FragmentManager fm, Book book) {
         super(fm);
-        this.pageCount = pageCount;
+        this.book = book;
     }
 
     @NonNull
@@ -24,6 +25,6 @@ public class BookAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return pageCount;
+        return book.getPageCount();
     }
 }
